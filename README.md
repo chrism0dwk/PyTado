@@ -18,7 +18,7 @@ Besides owning a Tado system, I have no connection with the Tado company themsel
 Example basic usage
 -------------------
 
-    >>> from PyTado import Tado
+    >>> from PyTado.interface import Tado
     >>> t = Tado('my@username.com', 'mypassword')
     >>> climate = t.getClimate(zone=1)
 
