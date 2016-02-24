@@ -3,20 +3,16 @@ import urllib2
 from cookielib import CookieJar
 import json
 
+
 class Tado:
     """Interacts with a Tado thermostat via public API.
     Example usage: t = Tado('me@somewhere.com', 'mypasswd')
                    t.getClimate(1) # Get climate, zone 1.
     """
-
-    # Class-wide constant info
+    # Instance-wide constant info
     headers = { 'Referer' : 'https://my.tado.com/' }
     api2url = 'https://my.tado.com/api/v2/homes/'
 
-    # HTTPS Interface
-    cj = CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),
-                                  urllib2.HTTPSHandler())
 
     # 'Private' methods for use in class, Tado API V2.
     def _apiCall(self, cmd):
@@ -43,7 +39,6 @@ class Tado:
         response = self.opener.open(req)
         self._setOAuthHeader(json.loads(response.read()))
         return response
-
     
     # Public interface
     def getMe(self):
@@ -62,7 +57,7 @@ class Tado:
     
     def getCapabilities(self, zone):
         """Gets current capabilities of Zone zone."""
-        cmd = 'zones/%i/capabilites' % zone
+        cmd = 'zones/%i/capabilities' % zone
         data = self._apiCall(cmd)
         return data
 
@@ -76,5 +71,9 @@ class Tado:
     # Ctor
     def __init__(self, username, password):
         """Performs login and save session cookie."""
+        # HTTPS Interface
+        cj = CookieJar()
+        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),
+                                      urllib2.HTTPSHandler())
         self._loginV2(username, password)
         self.id = self.getMe()['homes'][0]['id']
