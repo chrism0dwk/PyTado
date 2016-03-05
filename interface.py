@@ -68,6 +68,12 @@ class Tado:
         return { 'temperature' : data['insideTemperature']['celsius'],
                  'humidity'    : data['humidity']['percentage'] }
 
+    def getWeather(self):
+        """Gets outside weather data"""
+        cmd = 'weather'
+        data = self._apiCall(cmd)
+        return data
+
     # Ctor
     def __init__(self, username, password):
         """Performs login and save session cookie."""
