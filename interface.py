@@ -12,7 +12,16 @@ class Tado:
     # Instance-wide constant info
     headers = { 'Referer' : 'https://my.tado.com/' }
     api2url = 'https://my.tado.com/api/v2/homes/'
+    mobi2url = 'https://my.tado.com/mobile/1.9/'
 
+
+    # 'Private' methods for use in class, Tado mobile API V1.9.
+    def _mobile_apiCall(self, cmd):
+        url = '%s%s' % (self.mobi2url, cmd)
+        req = urllib2.Request(url, headers=self.headers)
+        response = self.opener.open(req)
+        data = json.loads(response.read())
+        return data
 
     # 'Private' methods for use in class, Tado API V2.
     def _apiCall(self, cmd):
@@ -72,6 +81,18 @@ class Tado:
         """Gets outside weather data"""
         cmd = 'weather'
         data = self._apiCall(cmd)
+        return data
+
+    def getAppUsers(self):
+        """Gets getAppUsers data"""
+        cmd = 'getAppUsers'
+        data = self._mobile_apiCall(cmd)
+        return data
+
+    def getAppUsersRelativePositions(self):
+        """Gets getAppUsersRelativePositions data"""
+        cmd = 'getAppUsersRelativePositions'
+        data = self._mobile_apiCall(cmd)
         return data
 
     # Ctor
