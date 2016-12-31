@@ -4,7 +4,6 @@ from http.cookiejar import CookieJar
 
 import json
 
-
 class Tado:
     """Interacts with a Tado thermostat via public API.
     Example usage: t = Tado('me@somewhere.com', 'mypasswd')
@@ -45,7 +44,9 @@ class Tado:
                  'username' : username }
         data = urllib.parse.urlencode(data)
         url = url + '?' + data
-        req = urllib.request.Request(url, data={}, headers=self.headers)
+        req = urllib.request.Request(url, data=json.dumps({}).encode('utf8'), method='POST',
+                                 headers={'Content-Type': 'application/json', 'Referer' : 'https://my.tado.com/'})
+        
         response = self.opener.open(req)
         self._setOAuthHeader(json.loads(response.read()))
         return response
@@ -113,7 +114,8 @@ class Tado:
         """Performs login and save session cookie."""
         # HTTPS Interface
         cj = CookieJar()
-        self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj),
-                                      urllib.request.HTTPSHandler())
+        self.opener = urllib.request.build_opener(
+            urllib.request.HTTPCookieProcessor(cj),
+            urllib.request.HTTPSHandler())
         self._loginV2(username, password)
         self.id = self.getMe()['homes'][0]['id']
