@@ -1,5 +1,9 @@
 import urllib
-import urllib2
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
+
 from cookielib import CookieJar
 import json
 
