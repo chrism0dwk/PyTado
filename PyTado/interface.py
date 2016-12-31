@@ -4,7 +4,11 @@ try:
 except ImportError:
     import urllib2
 
-from cookielib import CookieJar
+try:
+    from http.cookiejar import CookieJar
+except ImportError:
+    from cookielib import CookieJar
+
 import json
 
 
