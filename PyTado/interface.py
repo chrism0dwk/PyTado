@@ -57,6 +57,18 @@ class Tado:
         response = self.opener.open(req)
         data = json.loads(response.read())
         return data
+    
+    def getDevices(self):
+        """Gets device information."""
+        cmd = 'devices'
+        data = self._apiCall(cmd)
+        return data
+
+    def getZones(self):
+        """Gets zones information."""
+        cmd = 'zones'
+        data = self._apiCall(cmd)
+        return data
 
     def getState(self, zone):
         """Gets current state of Zone zone."""
