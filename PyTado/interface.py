@@ -4,6 +4,7 @@ from http.cookiejar import CookieJar
 
 import json
 
+
 class Tado:
     """Interacts with a Tado thermostat via public API.
     Example usage: t = Tado('me@somewhere.com', 'mypasswd')
@@ -20,7 +21,8 @@ class Tado:
         url = '%s%s' % (self.mobi2url, cmd)
         req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
-        data = json.loads(response.read())
+        str_response = response.read().decode('utf-8')
+        data = json.loads(str_response)
         return data
 
     # 'Private' methods for use in class, Tado API V2.
@@ -28,7 +30,8 @@ class Tado:
         url = '%s%i/%s' % (self.api2url, self.id, cmd)
         req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
-        data = json.loads(response.read())
+        str_response = response.read().decode('utf-8')
+        data = json.loads(str_response)
         return data
 
     def _setOAuthHeader(self, data):
@@ -48,7 +51,8 @@ class Tado:
                                  headers={'Content-Type': 'application/json', 'Referer' : 'https://my.tado.com/'})
         
         response = self.opener.open(req)
-        self._setOAuthHeader(json.loads(response.read()))
+        str_response = response.read().decode('utf-8')
+        self._setOAuthHeader(json.loads(str_response))
         return response
     
     # Public interface
@@ -57,7 +61,8 @@ class Tado:
         url = 'https://my.tado.com/api/v2/me'
         req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
-        data = json.loads(response.read())
+        str_response = response.read().decode('utf-8')
+        data = json.loads(str_response)
         return data
     
     def getDevices(self):
