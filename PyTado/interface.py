@@ -1,13 +1,6 @@
-import urllib
-try:
-    import urllib.request as urllib2
-except ImportError:
-    import urllib2
+import urllib.request, urllib.parse, urllib.error
 
-try:
-    from http.cookiejar import CookieJar
-except ImportError:
-    from cookielib import CookieJar
+from http.cookiejar import CookieJar
 
 import json
 
@@ -26,7 +19,7 @@ class Tado:
     # 'Private' methods for use in class, Tado mobile API V1.9.
     def _mobile_apiCall(self, cmd):
         url = '%s%s' % (self.mobi2url, cmd)
-        req = urllib2.Request(url, headers=self.headers)
+        req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
         data = json.loads(response.read())
         return data
@@ -34,7 +27,7 @@ class Tado:
     # 'Private' methods for use in class, Tado API V2.
     def _apiCall(self, cmd):
         url = '%s%i/%s' % (self.api2url, self.id, cmd)
-        req = urllib2.Request(url, headers=self.headers)
+        req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
         data = json.loads(response.read())
         return data
@@ -50,9 +43,9 @@ class Tado:
                  'password' : password,
                  'scope' : 'home.user',
                  'username' : username }
-        data = urllib.urlencode(data)
+        data = urllib.parse.urlencode(data)
         url = url + '?' + data
-        req = urllib2.Request(url, data={}, headers=self.headers)
+        req = urllib.request.Request(url, data={}, headers=self.headers)
         response = self.opener.open(req)
         self._setOAuthHeader(json.loads(response.read()))
         return response
@@ -61,7 +54,7 @@ class Tado:
     def getMe(self):
         """Gets home information."""
         url = 'https://my.tado.com/api/v2/me'
-        req = urllib2.Request(url, headers=self.headers)
+        req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
         data = json.loads(response.read())
         return data
@@ -120,7 +113,7 @@ class Tado:
         """Performs login and save session cookie."""
         # HTTPS Interface
         cj = CookieJar()
-        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj),
-                                      urllib2.HTTPSHandler())
+        self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj),
+                                      urllib.request.HTTPSHandler())
         self._loginV2(username, password)
         self.id = self.getMe()['homes'][0]['id']
