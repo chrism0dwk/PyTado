@@ -2,8 +2,7 @@ import urllib.request, urllib.parse, urllib.error
 
 from http.cookiejar import CookieJar
 
-import json
-
+import json, datetime
 
 class Tado:
     """Interacts with a Tado thermostat via public API.
@@ -14,10 +13,13 @@ class Tado:
     headers = { 'Referer' : 'https://my.tado.com/' }
     api2url = 'https://my.tado.com/api/v2/homes/'
     mobi2url = 'https://my.tado.com/mobile/1.9/'
-
+    refresh_token = ''
+    refresh_at = datetime.datetime.now() + datetime.timedelta(minutes=5)
 
     # 'Private' methods for use in class, Tado mobile API V1.9.
     def _mobile_apiCall(self, cmd):
+        self._refreshToken()
+
         url = '%s%s' % (self.mobi2url, cmd)
         req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
@@ -27,6 +29,8 @@ class Tado:
 
     # 'Private' methods for use in class, Tado API V2.
     def _apiCall(self, cmd):
+        self._refreshToken()
+
         url = '%s%i/%s' % (self.api2url, self.id, cmd)
         req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
@@ -36,7 +40,36 @@ class Tado:
 
     def _setOAuthHeader(self, data):
         access_token = data['access_token']
+        expires_in = float(data['expires_in'])
+        refresh_token = data['refresh_token']
+
+        self.refresh_token = refresh_token
+        self.refresh_at = datetime.datetime.now()
+        self.refresh_at = self.refresh_at + datetime.timedelta(minutes = expires_in)
+        
         self.headers['Authorization'] = 'Bearer ' + access_token
+
+    def _refreshToken(self):
+        if self.refresh_at >= datetime.datetime.now():
+            return False
+
+        url='https://my.tado.com/oauth/token'
+        data = { 'client_id' : 'tado-webapp',
+                 'grant_type' : 'refresh_token',
+                 'scope' : 'home.user',
+                 'refresh_token' : self.refresh_token }
+        data = urllib.parse.urlencode(data)
+        url = url + '?' + data
+        req = urllib.request.Request(url, data=json.dumps({}).encode('utf8'), method='POST',
+                                 headers={'Content-Type': 'application/json', 'Referer' : 'https://my.tado.com/'})
+        
+        response = self.opener.open(req)
+        str_response = response.read().decode('utf-8')
+
+        print(str_response)
+
+        self._setOAuthHeader(json.loads(str_response))
+        return response
         
     def _loginV2(self, username, password):
         url='https://my.tado.com/oauth/token'
@@ -52,6 +85,7 @@ class Tado:
         
         response = self.opener.open(req)
         str_response = response.read().decode('utf-8')
+
         self._setOAuthHeader(json.loads(str_response))
         return response
     
