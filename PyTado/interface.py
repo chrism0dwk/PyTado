@@ -4,6 +4,7 @@ from http.cookiejar import CookieJar
 
 import json, datetime
 
+
 class Tado:
     """Interacts with a Tado thermostat via public API.
     Example usage: t = Tado('me@somewhere.com', 'mypasswd')
@@ -15,6 +16,7 @@ class Tado:
     mobi2url = 'https://my.tado.com/mobile/1.9/'
     refresh_token = ''
     refresh_at = datetime.datetime.now() + datetime.timedelta(minutes=5)
+
 
     # 'Private' methods for use in class, Tado mobile API V1.9.
     def _mobile_apiCall(self, cmd):
@@ -45,7 +47,7 @@ class Tado:
 
         self.refresh_token = refresh_token
         self.refresh_at = datetime.datetime.now()
-        self.refresh_at = self.refresh_at + datetime.timedelta(minutes = expires_in)
+        self.refresh_at = self.refresh_at + datetime.timedelta(seconds = expires_in)
         
         self.headers['Authorization'] = 'Bearer ' + access_token
 
@@ -65,8 +67,6 @@ class Tado:
         
         response = self.opener.open(req)
         str_response = response.read().decode('utf-8')
-
-        print(str_response)
 
         self._setOAuthHeader(json.loads(str_response))
         return response
