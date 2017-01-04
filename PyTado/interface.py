@@ -30,13 +30,28 @@ class Tado:
         return data
 
     # 'Private' methods for use in class, Tado API V2.
-    def _apiCall(self, cmd):
+    def _apiCall(self, cmd, method="GET", data=None):
         self._refreshToken()
 
+        headers = self.headers
+
+        if data is not None:
+            headers['Content-Type'] = 'application/json;charset=UTF-8'
+            headers['Mime-Type'] = 'application/json;charset=UTF-8'
+            data=json.dumps(data).encode('utf8')
+
         url = '%s%i/%s' % (self.api2url, self.id, cmd)
-        req = urllib.request.Request(url, headers=self.headers)
+        req = urllib.request.Request(url, 
+            headers=headers,
+            method=method,
+            data=data)
+
         response = self.opener.open(req)
         str_response = response.read().decode('utf-8')
+
+        if str_response is None or str_response == "":
+            return
+
         data = json.loads(str_response)
         return data
 
@@ -72,6 +87,9 @@ class Tado:
         return response
         
     def _loginV2(self, username, password):
+        headers = self.headers
+        headers['Content-Type'] = 'application/json'
+
         url='https://my.tado.com/oauth/token'
         data = { 'client_id' : 'tado-webapp',
                  'grant_type' : 'password',
@@ -146,6 +164,45 @@ class Tado:
         """Gets getAppUsersRelativePositions data"""
         cmd = 'getAppUsersRelativePositions'
         data = self._mobile_apiCall(cmd)
+        return data
+
+    def resetZoneOverlay(self, zone):
+        """Delete current overlay"""
+        cmd = 'zones/%i/overlay' % zone
+        data = self._apiCall(cmd, "DELETE", {})
+        return data
+
+    def setZoneOverlay(self, zone, overlayMode, setTemp=None, duration=None):
+        """set current overlay for a zone"""
+        cmd = 'zones/%i/overlay' % zone
+
+        postData = { "setting" : {}, "termination" : {} }
+
+        if setTemp is None:
+            postData["setting"] = {
+                "type":"HEATING",
+                "power":"OFF"
+            }
+        else:
+            postData["setting"] = {
+                "type":"HEATING",
+                "power":"ON",
+                "temperature":{
+                    "celsius": setTemp
+                }
+            }
+
+        postData["termination"] = {
+            "type":overlayMode
+            #{"type":"TIMER","durationInSeconds":900}
+            #{"type":"MANUAL"}
+            #{"type":"TADO_MODE"}
+        }
+
+        if duration is not None:
+            postData["termination"]["durationInSeconds"] = duration
+
+        data = self._apiCall(cmd, "PUT", postData)
         return data
 
     # Ctor
