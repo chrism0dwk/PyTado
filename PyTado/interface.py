@@ -30,13 +30,16 @@ class Tado:
         return data
 
     # 'Private' methods for use in class, Tado API V2.
-    def _apiCall(self, cmd, method="GET", data=None):
+    def _apiCall(self, cmd, method="GET", data=None, plain=False):
         self._refreshToken()
 
         headers = self.headers
 
         if data is not None:
-            headers['Content-Type'] = 'application/json;charset=UTF-8'
+            if plain:
+                headers['Content-Type'] = 'text/plain;charset=UTF-8'
+            else:
+                headers['Content-Type'] = 'application/json;charset=UTF-8'
             headers['Mime-Type'] = 'application/json;charset=UTF-8'
             data=json.dumps(data).encode('utf8')
 
@@ -169,7 +172,7 @@ class Tado:
     def resetZoneOverlay(self, zone):
         """Delete current overlay"""
         cmd = 'zones/%i/overlay' % zone
-        data = self._apiCall(cmd, "DELETE", {})
+        data = self._apiCall(cmd, "DELETE", {}, True)
         return data
 
     def setZoneOverlay(self, zone, overlayMode, setTemp=None, duration=None):
@@ -202,7 +205,7 @@ class Tado:
         if duration is not None:
             postData["termination"]["durationInSeconds"] = duration
 
-        data = self._apiCall(cmd, "PUT", postData)
+        data = self._apiCall(cmd, "PUT", postData, True)
         return data
 
     # Ctor
