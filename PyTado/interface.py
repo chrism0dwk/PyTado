@@ -66,6 +66,10 @@ class Tado:
         self.refresh_token = refresh_token
         self.refresh_at = datetime.datetime.now()
         self.refresh_at = self.refresh_at + datetime.timedelta(seconds = expires_in)
+
+        # we substract 30 seconds from the correct refresh time
+        # then we have a 30 seconds timespan to get a new refresh_token
+        self.refresh_at = self.refresh_at + datetime.timedelta(seconds = -30)
         
         self.headers['Authorization'] = 'Bearer ' + access_token
 
