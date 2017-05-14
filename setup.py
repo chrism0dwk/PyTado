@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(name='PyTado',
-      version='0.1.0',
-      description='PyTado from chrism0dwk',
+      version='0.1.10',
+      description='PyTado from chrism0dwk, modfied by w.malgadey',
       keywords='tado',
-      author='chrism0dwk',
-      author_email='chrism0dwk@gmail.com',
-      url='https://github.com/chrism0dwk/PyTado',
+      author='chrism0dwk, w.malgadey',
+      author_email='chrism0dwk@gmail.com, w.malgadey@gmail.com',
+      url='https://github.com/wmalgadey/PyTado',
       zip_safe=False,
       platforms=["any"],
-      packages=find_packages(),
-      )
+      packages=find_packages()
+     )
