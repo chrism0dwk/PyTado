@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='PyTado',
-      version='0.1.10',
+      version='0.2.0',
       description='PyTado from chrism0dwk, modfied by w.malgadey',
       keywords='tado',
       author='chrism0dwk, w.malgadey',
