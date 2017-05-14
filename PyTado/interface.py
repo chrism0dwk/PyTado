@@ -2,6 +2,7 @@
 PyTado interface implementation for mytado.com
 """
 
+import logging
 import json
 import datetime
 import urllib.request
@@ -11,11 +12,16 @@ import urllib.error
 from http.cookiejar import CookieJar
 
 
+_LOGGER = logging.getLogger(__name__)
+
+
 class Tado:
     """Interacts with a Tado thermostat via public API.
     Example usage: t = Tado('me@somewhere.com', 'mypasswd')
                    t.getClimate(1) # Get climate, zone 1.
     """
+
+    _debugCalls = False
 
     # Instance-wide constant info
     headers = {'Referer' : 'https://my.tado.com/'}
@@ -24,17 +30,25 @@ class Tado:
     refresh_token = ''
     refresh_at = datetime.datetime.now() + datetime.timedelta(minutes=5)
 
-
     # 'Private' methods for use in class, Tado mobile API V1.9.
     def _mobile_apiCall(self, cmd):
         # pylint: disable=C0103
 
         self._refresh_token()
 
+        if self._debugCalls:
+            _LOGGER.debug("mobile api: %s",
+                          cmd)
+
         url = '%s%s' % (self.mobi2url, cmd)
         req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
         str_response = response.read().decode('utf-8')
+
+        if self._debugCalls:
+            _LOGGER.debug("mobile api: %s, response: %s",
+                          cmd, response)
+
         data = json.loads(str_response)
         return data
 
@@ -54,6 +68,10 @@ class Tado:
             headers['Mime-Type'] = 'application/json;charset=UTF-8'
             data = json.dumps(data).encode('utf8')
 
+        if self._debugCalls:
+            _LOGGER.debug("api call: %s: %s, headers %s, data %s",
+                          method, cmd, headers, data)
+
         url = '%s%i/%s' % (self.api2url, self.id, cmd)
         req = urllib.request.Request(url,
                                      headers=headers,
@@ -61,8 +79,12 @@ class Tado:
                                      data=data)
 
         response = self.opener.open(req)
-        str_response = response.read().decode('utf-8')
 
+        if self._debugCalls:
+            _LOGGER.debug("api call: %s: %s, response %s",
+                          method, cmd, response)
+
+        str_response = response.read().decode('utf-8')
         if str_response is None or str_response == "":
             return
 
@@ -132,6 +154,10 @@ class Tado:
 
         self._setOAuthHeader(json.loads(str_response))
         return response
+
+    def setDebugging(self, debugCalls):
+        self._debugCalls = debugCalls
+        return self._debugCalls
 
     # Public interface
     def getMe(self):
