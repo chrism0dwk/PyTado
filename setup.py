@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-setup(name='PyTado2',
+setup(name='python-tado',
       version='0.2.2',
       description='PyTado from chrism0dwk, modfied by w.malgadey',
       keywords='tado',
