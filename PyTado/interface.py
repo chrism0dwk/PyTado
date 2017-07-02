@@ -113,8 +113,8 @@ class Tado:
             return False
 
         url = 'https://my.tado.com/oauth/token'
-        data = {'client_id' : 'tado-web-app',
-                'client_secret' : 'wZaRN7rpjn3FoNyF5IFuxg9uMzYJcvOoQ8QWiIqS3hfk6gLhVlG57j5YNoZL2Rtc',
+        data = {'client_id' : 'public-api-preview',
+                'client_secret' : '4HJGRffVR8xb3XdEUQpjgZ1VplJi6Xgw',
                 'grant_type' : 'refresh_token',
                 'scope' : 'home.user',
                 'refresh_token' : self.refresh_token}
@@ -138,8 +138,8 @@ class Tado:
         headers['Content-Type'] = 'application/json'
 
         url = 'https://my.tado.com/oauth/token'
-        data = {'client_id' : 'tado-web-app',
-                'client_secret' : 'wZaRN7rpjn3FoNyF5IFuxg9uMzYJcvOoQ8QWiIqS3hfk6gLhVlG57j5YNoZL2Rtc',
+        data = {'client_id' : 'public-api-preview',
+                'client_secret' : '4HJGRffVR8xb3XdEUQpjgZ1VplJi6Xgw',
                 'grant_type' : 'password',
                 'password' : password,
                 'scope' : 'home.user',
