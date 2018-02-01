@@ -5,9 +5,6 @@ PyTado interface implementation for mytado.com
 import logging
 import json
 import datetime
-#import urllib.request
-#import urllib.parse
-#import urllib.error
 import urllib2
 import urllib
 
