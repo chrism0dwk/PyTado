@@ -275,7 +275,7 @@ class Tado:
         if duration is not None:
             post_data["termination"]["durationInSeconds"] = duration
 
-        data = self._apiCall(cmd, "PUT", post_data, True)
+        data = self._apiCall(cmd, "PUT", post_data)
         return data
 
     # Ctor
