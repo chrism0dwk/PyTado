@@ -1,4 +1,14 @@
+# Python compiled files.
 *.pyc
-*.bak
 
-result.*
+# Eclipse project files.
+.project
+.pydevproject
+
+PyTado.egg-info
+build/
+dist/
+pytado.egg-info
+
+PyCharms
+.idea/
