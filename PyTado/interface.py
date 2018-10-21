@@ -21,8 +21,6 @@ class Tado:
                    t.getClimate(1) # Get climate, zone 1.
     """
 
-    _debugCalls = False
-
     # Instance-wide constant info
     headers = {'Referer' : 'https://my.tado.com/'}
     api2url = 'https://my.tado.com/api/v2/homes/'
@@ -36,18 +34,14 @@ class Tado:
 
         self._refresh_token()
 
-        if self._debugCalls:
-            _LOGGER.debug("mobile api: %s",
-                          cmd)
+        _LOGGER.debug("mobile api: %s", cmd)
 
         url = '%s%s' % (self.mobi2url, cmd)
         req = urllib.request.Request(url, headers=self.headers)
         response = self.opener.open(req)
         str_response = response.read().decode('utf-8')
 
-        if self._debugCalls:
-            _LOGGER.debug("mobile api: %s, response: %s",
-                          cmd, response)
+        _LOGGER.debug("mobile api: %s, response: %s", cmd, response)
 
         data = json.loads(str_response)
         return data
@@ -68,9 +62,8 @@ class Tado:
             headers['Mime-Type'] = 'application/json;charset=UTF-8'
             data = json.dumps(data).encode('utf8')
 
-        if self._debugCalls:
-            _LOGGER.debug("api call: %s: %s, headers %s, data %s",
-                          method, cmd, headers, data)
+        _LOGGER.debug("api call: %s: %s, headers %s, data %s",
+                      method, cmd, headers, data)
 
         url = '%s%i/%s' % (self.api2url, self.id, cmd)
         req = urllib.request.Request(url,
@@ -80,9 +73,7 @@ class Tado:
 
         response = self.opener.open(req)
 
-        if self._debugCalls:
-            _LOGGER.debug("api call: %s: %s, response %s",
-                          method, cmd, response)
+        _LOGGER.debug("api call: %s: %s, response %s", method, cmd, response)
 
         str_response = response.read().decode('utf-8')
         if str_response is None or str_response == "":
@@ -156,10 +147,6 @@ class Tado:
 
         self._setOAuthHeader(json.loads(str_response))
         return response
-
-    def setDebugging(self, debugCalls):
-        self._debugCalls = debugCalls
-        return self._debugCalls
 
     # Public interface
     def getMe(self):
