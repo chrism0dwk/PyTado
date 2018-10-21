@@ -30,7 +30,6 @@ setup(name='python-tado',
       license="GPL3",
       zip_safe=False,
       platforms=["any"],
-      packages=find_packages(),
       classifiers=[
         'Development Status :: 3 - Alpha',
         'Topic :: Home Automation',
