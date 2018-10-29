@@ -261,7 +261,7 @@ class Tado:
                 "type": deviceType,
                 "power": power
             }
-        else if mode is not None:
+        elif mode is not None:
             post_data["setting"] = {
                 "type": deviceType,
                 "power": power,
