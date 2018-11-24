@@ -7,7 +7,7 @@ import sys
 here = lambda *a: os.path.join(os.path.dirname(__file__), *a)
 
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
     from distutils.core import setup
 
@@ -19,7 +19,7 @@ readme = open(here('README.md')).read()
 requirements = [x.strip() for x in open(here('requirements.txt')).readlines()]
 
 setup(name='python-tado',
-      version='0.2.6',
+      version='0.2.7',
       description='PyTado from chrism0dwk, modfied by w.malgadey',
       long_description=readme,
       keywords='tado',
@@ -30,6 +30,7 @@ setup(name='python-tado',
       license="GPL3",
       zip_safe=False,
       platforms=["any"],
+      packages=find_packages(),
       classifiers=[
         'Development Status :: 3 - Alpha',
         'Topic :: Home Automation',
