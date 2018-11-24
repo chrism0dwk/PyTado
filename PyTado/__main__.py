@@ -6,12 +6,12 @@
 import argparse
 import json
 import logging
-from interface import Tado as tado_client
+from PyTado.interface import Tado as tado_client
 import sys
 import time
 
 def log_in(email, password):
-    t = tado_client(email,password);
+    t = tado_client(email,password)
     return t
 
 def get_me(args):
