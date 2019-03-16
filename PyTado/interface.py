@@ -112,7 +112,7 @@ class Tado:
         if self.refresh_at >= datetime.datetime.now():
             return False
 
-        url = 'https://my.tado.com/oauth/token'
+        url = 'https://auth.tado.com/oauth/token'
         data = {'client_id' : 'public-api-preview',
                 'client_secret' : '4HJGRffVR8xb3XdEUQpjgZ1VplJi6Xgw',
                 'grant_type' : 'refresh_token',
@@ -137,7 +137,7 @@ class Tado:
         headers = self.headers
         headers['Content-Type'] = 'application/json'
 
-        url = 'https://my.tado.com/oauth/token'
+        url = 'https://auth.tado.com/oauth/token'
         data = {'client_id' : 'public-api-preview',
                 'client_secret' : '4HJGRffVR8xb3XdEUQpjgZ1VplJi6Xgw',
                 'grant_type' : 'password',
