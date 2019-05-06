@@ -112,7 +112,7 @@ class Tado:
         if self.refresh_at >= datetime.datetime.now():
             return False
 
-        url = 'https://my.tado.com/oauth/token'
+        url = 'https://auth.tado.com/oauth/token'
         data = {'client_id' : 'public-api-preview',
                 'client_secret' : '4HJGRffVR8xb3XdEUQpjgZ1VplJi6Xgw',
                 'grant_type' : 'refresh_token',
@@ -137,7 +137,7 @@ class Tado:
         headers = self.headers
         headers['Content-Type'] = 'application/json'
 
-        url = 'https://my.tado.com/oauth/token'
+        url = 'https://auth.tado.com/oauth/token'
         data = {'client_id' : 'public-api-preview',
                 'client_secret' : '4HJGRffVR8xb3XdEUQpjgZ1VplJi6Xgw',
                 'grant_type' : 'password',
@@ -245,7 +245,7 @@ class Tado:
         data = self._apiCall(cmd, "DELETE", {}, True)
         return data
 
-    def setZoneOverlay(self, zone, overlayMode, setTemp=None, duration=None):
+    def setZoneOverlay(self, zone, overlayMode, setTemp=None, duration=None, deviceType='HEATING', power="ON", mode=None):
         """set current overlay for a zone"""
         # pylint: disable=C0103
 
@@ -258,13 +258,22 @@ class Tado:
 
         if setTemp is None:
             post_data["setting"] = {
-                "type":"HEATING",
-                "power":"OFF"
+                "type": deviceType,
+                "power": power
+            }
+        elif mode is not None:
+            post_data["setting"] = {
+                "type": deviceType,
+                "power": power,
+                "mode": mode,
+                "temperature":{
+                    "celsius": setTemp
+                }
             }
         else:
             post_data["setting"] = {
-                "type":"HEATING",
-                "power":"ON",
+                "type": deviceType,
+                "power": power,
                 "temperature":{
                     "celsius": setTemp
                 }
@@ -275,7 +284,7 @@ class Tado:
         if duration is not None:
             post_data["termination"]["durationInSeconds"] = duration
 
-        data = self._apiCall(cmd, "PUT", post_data, True)
+        data = self._apiCall(cmd, "PUT", post_data)
         return data
 
     # Ctor
