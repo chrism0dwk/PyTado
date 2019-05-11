@@ -5,9 +5,8 @@ PyTado interface implementation for mytado.com
 import logging
 import json
 import datetime
-import urllib.request
-import urllib.parse
-import urllib.error
+import urllib2
+import urllib
 
 from http.cookiejar import CookieJar
 
@@ -41,7 +40,7 @@ class Tado:
                           cmd)
 
         url = '%s%s' % (self.mobi2url, cmd)
-        req = urllib.request.Request(url, headers=self.headers)
+        req = urllib2.urlopen(url, headers=self.headers)
         response = self.opener.open(req)
         str_response = response.read().decode('utf-8')
 
@@ -73,9 +72,8 @@ class Tado:
                           method, cmd, headers, data)
 
         url = '%s%i/%s' % (self.api2url, self.id, cmd)
-        req = urllib.request.Request(url,
+        req = urllib2.Request(url,
                                      headers=headers,
-                                     method=method,
                                      data=data)
 
         response = self.opener.open(req)
@@ -119,9 +117,9 @@ class Tado:
                 'scope' : 'home.user',
                 'refresh_token' : self.refresh_token}
         # pylint: disable=R0204
-        data = urllib.parse.urlencode(data)
+        data = urllib.urlencode(data)
         url = url + '?' + data
-        req = urllib.request.Request(url, data=json.dumps({}).encode('utf8'), method='POST',
+        req = urllib2.urlopen(url, data=json.dumps({}).encode('utf8'), method='POST',
                                      headers={'Content-Type': 'application/json',
                                               'Referer' : 'https://my.tado.com/'})
 
@@ -145,9 +143,9 @@ class Tado:
                 'scope' : 'home.user',
                 'username' : username}
         # pylint: disable=R0204
-        data = urllib.parse.urlencode(data)
+        data = urllib.urlencode(data)
         url = url + '?' + data
-        req = urllib.request.Request(url, data=json.dumps({}).encode('utf8'), method='POST',
+        req = urllib2.Request(url, data=json.dumps({}).encode('utf8'), #method='POST',
                                      headers={'Content-Type': 'application/json',
                                               'Referer' : 'https://my.tado.com/'})
 
@@ -167,7 +165,7 @@ class Tado:
         # pylint: disable=C0103
 
         url = 'https://my.tado.com/api/v2/me'
-        req = urllib.request.Request(url, headers=self.headers)
+        req = urllib2.Request(url, headers=self.headers)
         response = self.opener.open(req)
         str_response = response.read().decode('utf-8')
         data = json.loads(str_response)
@@ -295,8 +293,8 @@ class Tado:
         # pylint: disable=C0103
         cj = CookieJar()
 
-        self.opener = urllib.request.build_opener(
-            urllib.request.HTTPCookieProcessor(cj),
-            urllib.request.HTTPSHandler())
+        self.opener = urllib2.build_opener(
+            urllib2.HTTPCookieProcessor(cj),
+            urllib2.HTTPSHandler())
         self._loginV2(username, password)
         self.id = self.getMe()['homes'][0]['id']
