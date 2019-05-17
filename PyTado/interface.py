@@ -213,6 +213,28 @@ class Tado:
         return {'temperature' : data['insideTemperature']['celsius'],
                 'humidity'    : data['humidity']['percentage']}
 
+    def getSchedule(self, zone, day=None):
+        """Get the JSON representation of the schedule for a zone"""
+        # pylint: disable=C0103
+
+        if day:
+            cmd = 'zones/%i/schedule/timetables/1/blocks/%s' % (zone,day)
+        else:
+            cmd = 'zones/%i/schedule/timetables/1/blocks' % zone
+
+        data = self._apiCall(cmd, "GET", {}, True)
+        return data
+
+    def setSchedule(self, zone, day, data):
+        """Set the schedule for a zone, day is required"""
+        # pylint: disable=C0103
+
+        cmd = 'zones/%i/schedule/timetables/1/blocks/%s' % (zone,day)
+
+        data = self._apiCall(cmd, "PUT", data, True)
+        return data
+
+
     def getWeather(self):
         """Gets outside weather data"""
         # pylint: disable=C0103
