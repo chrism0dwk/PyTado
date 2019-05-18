@@ -9,6 +9,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 
+from enum import IntEnum
 from http.cookiejar import CookieJar
 
 
@@ -20,6 +21,12 @@ class Tado:
     Example usage: t = Tado('me@somewhere.com', 'mypasswd')
                    t.getClimate(1) # Get climate, zone 1.
     """
+
+    """Constants needed for get/set Schedule and Timetable"""
+    class Timetable(IntEnum):
+        ONE_DAY = 0
+        THREE_DAY = 1
+        SEVEN_DAY = 2
 
     _debugCalls = False
 
@@ -212,6 +219,67 @@ class Tado:
         data = self.getState(zone)['sensorDataPoints']
         return {'temperature' : data['insideTemperature']['celsius'],
                 'humidity'    : data['humidity']['percentage']}
+
+    def getTimetable(self, zone):
+        """Get the Timetable type currently active"""
+        # pylint: disable=C0103
+
+        cmd = 'zones/%i/schedule/activeTimetable' % (zone)
+
+        data = self._apiCall(cmd, "GET", {}, True)
+
+        if "id" in data:
+            return Tado.Timetable(data["id"])
+
+        raise Exception('Returned data did not contain "id" : '+str(data))
+
+    def setTimetable(self, zone, id):
+        """Set the Timetable type currently active
+           id = 0 : ONE_DAY (MONDAY_TO_SUNDAY)
+           id = 1 : THREE_DAY (MONDAY_TO_FRIDAY, SATURDAY, SUNDAY)
+           id = 3 : SEVEN_DAY (MONDAY, TUESDAY, WEDNESDAY ...)"""
+        # pylint: disable=C0103
+
+        # Type checking
+        if not isinstance(id, Tado.Timetable):
+            raise TypeError('id must be an instance of Tado.Timetable')
+
+        cmd = 'zones/%i/schedule/activeTimetable' % (zone)
+
+        data = self._apiCall(cmd, "PUT", {'id': id }, True)
+        return data
+
+    def getSchedule(self, zone, id, day=None):
+        """Get the JSON representation of the schedule for a zone
+           a Zone has 3 different schedules, one for each timetable
+           (see setTimetable) """
+        # pylint: disable=C0103
+
+        # Type checking
+        if not isinstance(id, Tado.Timetable):
+            raise TypeError('id must be an instance of Tado.Timetable')
+
+        if day:
+            cmd = 'zones/%i/schedule/timetables/%i/blocks/%s' % (zone,id,day)
+        else:
+            cmd = 'zones/%i/schedule/timetables/%i/blocks' % (zone,id)
+
+        data = self._apiCall(cmd, "GET", {}, True)
+        return data
+
+
+    def setSchedule(self, zone, id, day, data):
+        """Set the schedule for a zone, day is required"""
+        # pylint: disable=C0103
+
+        # Type checking
+        if not isinstance(id, Tado.Timetable):
+            raise TypeError('id must be an instance of Tado.Timetable')
+
+        cmd = 'zones/%i/schedule/timetables/%i/blocks/%s' % (zone,id,day)
+
+        data = self._apiCall(cmd, "PUT", data, True)
+        return data
 
     def getWeather(self):
         """Gets outside weather data"""
