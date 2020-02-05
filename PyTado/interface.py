@@ -24,11 +24,8 @@ class Tado:
     _debugCalls = False
 
     # Instance-wide constant info
-    headers = {'Referer' : 'https://my.tado.com/'}
     api2url = 'https://my.tado.com/api/v2/homes/'
     mobi2url = 'https://my.tado.com/mobile/1.9/'
-    refresh_token = ''
-    refresh_at = datetime.datetime.now() + datetime.timedelta(minutes=5)
 
     # 'Private' methods for use in class, Tado mobile API V1.9.
     def _mobile_apiCall(self, cmd):
@@ -54,6 +51,7 @@ class Tado:
 
     # 'Private' methods for use in class, Tado API V2.
     def _apiCall(self, cmd, method="GET", data=None, plain=False):
+
         # pylint: disable=C0103
 
         self._refresh_token()
@@ -290,6 +288,9 @@ class Tado:
     # Ctor
     def __init__(self, username, password):
         """Performs login and save session cookie."""
+        self.headers = {'Referer' : 'https://my.tado.com/'}
+        self.refresh_token = ''
+        self.refresh_at = datetime.datetime.now() + datetime.timedelta(minutes=5)
         # HTTPS Interface
 
         # pylint: disable=C0103
