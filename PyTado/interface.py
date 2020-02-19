@@ -26,6 +26,7 @@ class Tado:
     # Instance-wide constant info
     headers = {'Referer' : 'https://my.tado.com/'}
     api2url = 'https://my.tado.com/api/v2/homes/'
+    api2urlNoHomes = 'https://my.tado.com/api/v2/'
     mobi2url = 'https://my.tado.com/mobile/1.9/'
     refresh_token = ''
     refresh_at = datetime.datetime.now() + datetime.timedelta(minutes=5)
@@ -53,7 +54,7 @@ class Tado:
         return data
 
     # 'Private' methods for use in class, Tado API V2.
-    def _apiCall(self, cmd, method="GET", data=None, plain=False):
+    def _apiCall(self, cmd, method="GET", data=None, plain=False, self_id=True):
         # pylint: disable=C0103
 
         self._refresh_token()
@@ -72,7 +73,11 @@ class Tado:
             _LOGGER.debug("api call: %s: %s, headers %s, data %s",
                           method, cmd, headers, data)
 
-        url = '%s%i/%s' % (self.api2url, self.id, cmd)
+        if self_id:
+            url = '%s%i/%s' % (self.api2url, self.id, cmd)
+        else:
+            url = '%s%s' % (self.api2urlNoHomes, cmd)
+        
         req = urllib.request.Request(url,
                                      headers=headers,
                                      method=method,
@@ -244,7 +249,18 @@ class Tado:
         cmd = 'zones/%i/overlay' % zone
         data = self._apiCall(cmd, "DELETE", {}, True)
         return data
-
+    
+    def setOffset(self, device, offset_celsius, self_id=False):
+        '''set celsius offset for a device'''
+        cmd = 'devices/%s/temperatureOffset' % device
+        
+        post_data = {
+            "celsius": offset_celsius
+        }
+        
+        data = self._apiCall(cmd, "PUT", post_data, self_id=self_id)
+        return data
+    
     def setZoneOverlay(self, zone, overlayMode, setTemp=None, duration=None, deviceType='HEATING', power="ON", mode=None):
         """set current overlay for a zone"""
         # pylint: disable=C0103
